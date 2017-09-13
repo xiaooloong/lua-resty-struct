@@ -14,8 +14,6 @@ end
 
 local _M = new_tab(0, 8)
 
-local mt = { __index = _M }
-
 _M._VERSION = '0.0.1'
 
 function _M.get_int(data, endian)

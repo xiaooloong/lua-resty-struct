@@ -17,7 +17,7 @@ local _M = new_tab(0, 8)
 _M._VERSION = '0.0.1'
 
 function _M.get_int(data, endian)
-    local len = data:len()
+    local len = #data
     if endian and endian ~= machine_endian then
         data = reverse(data)
     end
@@ -41,7 +41,7 @@ function _M.set_int(number, size, endian)
 end
 
 function _M.get_uint(data, endian)
-    local len = data:len()
+    local len = #data
     if endian and endian ~= machine_endian then
         data = reverse(data)
     end
@@ -65,7 +65,7 @@ function _M.set_uint(number, size, endian)
 end
 
 function _M.get_float(data, endian)
-    local len = data:len()
+    local len = #data
     if endian and endian ~= machine_endian then
         data = reverse(data)
     end

@@ -25,10 +25,6 @@ function _M.pack(format, ...)
         elseif '>' == case or '!' == case then
             -- network/big endian
             endian = 'be'
-        elseif 'x' == case then
-            -- pad byte
-            local data = s.set_uint(0, 1)
-            buff:append(data)
         elseif 'c' == case then
             -- char
             local char = (args[i]):sub(1, 1)
@@ -101,7 +97,22 @@ function _M.unpack(format, string)
 end
 
 function _M.calcsize(format)
-
+    local count = 0
+    for i = 1, format:len() do
+        local case = format:sub(i, i)
+        if ('cbB?'):find(case) then
+            count = count + 1
+        elseif ('hH'):find(case) then
+            count = count + 2
+        elseif ('iIlLf'):find(case) then
+            count = count + 4
+        elseif ('qQd'):find(case) then
+            count = count + 8
+        else
+            return nil, ("format '%s' at pos %d not support"):format(case, i)
+        end
+    end
+    return count
 end
 
 return _M

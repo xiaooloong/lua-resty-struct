@@ -26,7 +26,7 @@ function _M.set(self, data)
     self.position = 0
 end
 
-function _M.apply(self, data)
+function _M.append(self, data)
     if not self.pool then
         return nil, 'not initialized'
     end

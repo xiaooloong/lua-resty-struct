@@ -13,7 +13,7 @@ _M._VERSION = '0.0.1'
 function _M.pack(format, ...)
     local args = {...}
     local buff = buffer:new()
-    local type, endian
+    local endian
     for i = 1, format:len() do
         local case = format:sub(i, i)
         if '@' == case or '=' == case then
@@ -92,15 +92,93 @@ function _M.pack(format, ...)
 end
 
 function _M.unpack(format, string)
-    local type, endian
-
+    local t = {}
+    local buff = buffer:new()
+    buff:set(string)
+    local endian
+    for i = 1, format:len() do
+        local case = format:sub(i, i)
+        if '@' == case or '=' == case then
+            -- native endian
+            endian = nil
+        elseif '<' == case then
+            -- little endian
+            endian = 'le'
+        elseif '>' == case or '!' == case then
+            -- network/big endian
+            endian = 'be'
+        elseif 'c' == case then
+            -- char
+            t[i] = buff:get(1)
+        elseif 'b' == case then
+            -- signed char
+            local data = buff:get(1)
+            t[i] = s.get_int(data)
+        elseif 'B' == case then
+            -- unsigned char
+            local data = buff:get(1)
+            t[i] = s.get_uint(data)
+        elseif '?' == case then
+            -- _Bool
+            local data = buff:get(1)
+            if 0 == s.get_int(data) then
+                t[i] = false
+            else
+                t[i] = true
+            end
+        elseif 'h' == case then
+            -- short
+            local data = buff:get(2)
+            t[i] = s.get_int(data, endian)
+        elseif 'H' == case then
+            -- unsigned short
+            local data = buff:get(2)
+            t[i] = s.get_uint(data, endian)
+        elseif 'i' == case then
+            -- int
+            local data = buff:get(4)
+            t[i] = s.get_int(data, endian)
+        elseif 'I' == case then
+            -- unsigned int
+            local data = buff:get(4)
+            t[i] = s.get_uint(data, endian)
+        elseif 'l' == case then
+            -- long
+            local data = buff:get(4)
+            t[i] = s.get_int(data, endian)
+        elseif 'L' == case then
+            -- unsigned long
+            local data = buff:get(4)
+            t[i] = s.get_uint(data, endian)
+        elseif 'q' == case then
+            -- long long
+            local data = buff:get(8)
+            t[i] = s.get_int(data, endian)
+        elseif 'Q' == case then
+            -- unsigned long long
+            local data = buff:get(8)
+            t[i] = s.get_uint(data, endian)
+        elseif 'f' == case then
+            -- float
+            local data = buff:get(4)
+            t[i] = s.get_float(data, endian)
+        elseif 'd' == case then
+            -- double
+            local data = buff:get(8)
+            t[i] = s.get_float(data, endian)
+        else
+            return nil, ("format '%s' at pos %d not support"):format(case, i)
+        end
+    end
+    return t
 end
 
 function _M.calcsize(format)
     local count = 0
     for i = 1, format:len() do
         local case = format:sub(i, i)
-        if ('cbB?'):find(case) then
+        if ('@=<>!'):find(case) then
+        elseif ('cbB?'):find(case) then
             count = count + 1
         elseif ('hH'):find(case) then
             count = count + 2

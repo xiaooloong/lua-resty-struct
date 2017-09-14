@@ -33,7 +33,7 @@ end
 function _M.set_int(number, size, endian)
     local int = ffi_new(('int%d_t[1]'):format(size * 8), number)
     local data = ffi_string(int, size)
-    if endian and endian ~= machine_endian then
+    if 1 ~= size and endian and endian ~= machine_endian then
         return reverse(data)
     else
         return data
@@ -57,7 +57,7 @@ end
 function _M.set_uint(number, size, endian)
     local uint = ffi_new(('uint%d_t[1]'):format(size * 8), number)
     local data = ffi_string(uint, size)
-    if endian and endian ~= machine_endian then
+    if 1 ~= size and endian and endian ~= machine_endian then
         return reverse(data)
     else
         return data

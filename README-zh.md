@@ -1,13 +1,12 @@
 # Resty Struct
-[中文说明](./README-zh.md)
 
-convert between binary and lua, based on luajit.
+OpenResty 网络协议基础库，用于解析和构造二进制数据
 
-just use like [struct][1] class of Python.
+用法和 python 的 [struct][1] 库相似
 
-this module is still on developing and do not use it now.
+代码开发中，请勿用于项目
 
-example:
+例：
 
 ```lua
 local struct = require 'resty.struct'
